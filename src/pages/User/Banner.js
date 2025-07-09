@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  FaCreditCard,
-  FaBoxOpen,
-  FaLock,
-  FaHandHoldingHeart,
-  FaTint,
-  FaHeart,
-  FaBook,
-  FaFemale
-} from 'react-icons/fa';
+import { FaCreditCard, FaBoxOpen, FaLock } from 'react-icons/fa';
 
 const Banner = () => {
   return (
@@ -37,8 +28,7 @@ const Banner = () => {
       {/* Barrita de íconos inferior */}
       <div
         style={{ backgroundColor: '#C4A7E7' }}
-        className="flex justify-around items-center text-white py-4"
-      >
+        className="flex justify-around items-center text-white py-4">
         <div className="flex flex-col items-center text-center">
           <FaCreditCard className="text-2xl mb-1 text-red-500" />
           <div className="font-semibold">PAGO</div>
@@ -55,8 +45,6 @@ const Banner = () => {
           <div className="text-xs">Seguro</div>
         </div>
       </div>
-
-
     </div>
   );
 };

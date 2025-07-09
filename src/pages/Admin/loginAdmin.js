@@ -1,92 +1,99 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica para manejar el login
-    console.log('Login attempt:', { username, password, rememberMe });
+    console.log('Login attempt:', { username, password });
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        {/* Logo y título */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">SinTaboo</h1>
-          <p className="text-gray-600 mt-2">Nombre del Usuarizzzzo de Administrador</p>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#230341' }}>
+      {/* HEADER */}
+      <header className="flex items-center px-20 py-4 bg-black">
+        <div className="flex items-center space-x-2 pl-6">
+          <img src={logo} alt="Logo" className="w-10 h-10 rounded-full" />
+          <h1 className="text-2xl font-bold">
+            <span style={{ color: '#FF7E5D' }}>Sin</span>
+            <span className="text-white">Taboo</span>
+          </h1>
         </div>
+      </header>
 
-        {/* Formulario de login */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Usuario
-            </label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
+      {/* MAIN */}
+      <main className="flex-grow flex flex-col items-center justify-center px-4">
+        <h2 className="text-white text-xl mb-8 font-semibold text-center">
+          Login de Administrador
+        </h2>
+
+        <div
+          className="rounded-lg border border-white p-6 w-full"
+          style={{ maxWidth: '360px' }}
+        >
+          {/* Logo centrado */}
+          <div className="flex items-center justify-center mb-6">
+            <img src={logo} alt="Logo" className="w-10 h-10 rounded-full mr-2" />
+            <h1 className="text-2xl font-bold flex items-center">
+              <span style={{ color: '#FF7E5D' }}>Sin</span>
+            <span className="text-white">Taboo</span>
+            </h1>
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Contraseña
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
+          {/* Formulario */}
+          <div className="rounded-md border border-white p-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="username" className="block text-white text-sm mb-1">
+                  Nombre de Usuario de administrador
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full rounded-md px-3 py-2 bg-[#b3a8e1] text-gray-900 border border-transparent focus:outline-none focus:ring-2 focus:ring-white"
+                  required
+                />
+              </div>
 
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-              Recordar sesión
-            </label>
-          </div>
+              <div>
+                <label htmlFor="password" className="block text-white text-sm mb-1">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-md px-3 py-2 bg-[#b3a8e1] text-gray-900 border border-transparent focus:outline-none focus:ring-2 focus:ring-white"
+                  required
+                />
+              </div>
 
-          <div>
-            <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Iniciar sesión
-            </button>
-          </div>
-        </form>
-
-        {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="text-center text-xs text-gray-500 mb-4">
-            <p>© 2025 SHNET TIBR.</p>
-          </div>
-          <div className="flex justify-center space-x-4 text-xs">
-            <Link to="#" className="text-gray-500 hover:text-gray-700">Terminar</Link>
-            <Link to="#" className="text-gray-500 hover:text-gray-700">Privacidad</Link>
-            <Link to="#" className="text-gray-500 hover:text-gray-700">Contactos</Link>
+              <button
+                type="submit"
+                className="w-full py-2 mt-2 text-white border border-white rounded-md hover:bg-white hover:text-[#230341] transition-colors duration-300"
+              >
+                Iniciar Sesión
+              </button>
+            </form>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="bg-black px-20 py-4 flex justify-between items-center text-white text-xs">
+        <span>© 2025 SWEET TRIP.</span>
+        <div className="space-x-6">
+          <Link to="#" className="hover:underline">Términos</Link>
+          <Link to="#" className="hover:underline">Privacidad</Link>
+          <Link to="#" className="hover:underline">Contactos</Link>
+        </div>
+      </footer>
     </div>
   );
 };
