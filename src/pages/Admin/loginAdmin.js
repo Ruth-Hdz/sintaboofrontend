@@ -18,7 +18,7 @@ const AdminLogin = () => {
         {/* Logo y título */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">SinTaboo</h1>
-          <p className="text-gray-600 mt-2">Nombre del Usuario de Administrador</p>
+          <p className="text-gray-600 mt-2">Nombre del Usuarizzzzo de Administrador</p>
         </div>
 
         {/* Formulario de login */}
