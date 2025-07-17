@@ -73,6 +73,8 @@ const AgregarProducto = ({
         if (!value || isNaN(value) || parseFloat(value) <= 0) errors.precio = 'El precio debe ser mayor a 0';
         else delete errors.precio;
         break;
+        case' estado':
+        if (!value || value === '') errors.estado = 'El estado es obligatorio';
       case 'stock':
         if (value === undefined || value === null || isNaN(value) || parseInt(value) < 0) errors.stock = 'El stock no puede ser negativo';
         else delete errors.stock;
@@ -284,6 +286,21 @@ const AgregarProducto = ({
               />
             </div>
             {formErrors.precio && <p className="text-red-400 text-sm mt-1">{formErrors.precio}</p>}
+          </div>
+          {/* ESTADO */}
+          <div className="mb-4">
+            <label className="block mb-1 text-white">Estado*</label>
+            <select
+              name="estado"
+              value={newProducto.estado || 'Activo'}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={`w-full rounded px-3 py-2 text-black ${formErrors.estado ? 'border-red-500 border' : ''}`}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+            {formErrors.estado && <p className="text-red-400 text-sm mt-1">{formErrors.estado}</p>}
           </div>
 
           {/* STOCK */}
