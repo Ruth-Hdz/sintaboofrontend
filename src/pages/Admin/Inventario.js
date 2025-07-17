@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
-import { FiEdit, FiTrash2, FiFilter, FiX } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiFilter, FiX, FiAlertTriangle } from "react-icons/fi";
 import AgregarProducto from "./AgregarProducto";
 import { API_URL } from "../../services/apiConfig";
 import { useNotification } from "../../context/NotificationContext";
@@ -44,7 +44,7 @@ const Inventario = () => {
       setIsLoading(true);
       const res = await axios.get(`${API_URL}/inventory`);
       setProducts(res.data);
-      setFilteredProducts(res.data); // Inicializa los productos filtrados
+      setFilteredProducts(res.data);
     } catch (err) {
       console.error("Error al obtener productos:", err);
       const errorMsg = err.response?.data?.message || "Error al cargar los productos";
@@ -70,7 +70,6 @@ const Inventario = () => {
   const handleChange = (e) => {
     setError(null);
     const { name, value } = e.target;
-
     setNewProducto(prev => ({
       ...prev,
       [name]: value
@@ -86,7 +85,6 @@ const Inventario = () => {
 
   const handleAddProduct = async (e, productoData) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("nombre", productoData.nombre);
     formData.append("descripcion", productoData.descripcion || '');
@@ -101,7 +99,6 @@ const Inventario = () => {
     try {
       setIsLoading(true);
       setError(null);
-
       const response = await axios.post(`${API_URL}/inventory`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -146,7 +143,6 @@ const Inventario = () => {
 
   const handleUpdateProduct = async (e, productoData) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("nombre", newProducto.nombre);
     formData.append("descripcion", newProducto.descripcion);
@@ -161,7 +157,6 @@ const Inventario = () => {
     try {
       setIsLoading(true);
       setError(null);
-
       const response = await axios.put(`${API_URL}/inventory/${editingId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -222,7 +217,7 @@ const Inventario = () => {
     setEditingId(null);
     setShowForm(false);
     setError(null);
-    showNotification("Pagina Actualizada", "info");
+    showNotification("Página actualizada", "info");
   };
 
   const toggleFilter = () => {
@@ -262,79 +257,80 @@ const Inventario = () => {
           </div>
         )}
 
-       <div className="flex justify-between mb-6">
-  <div className="relative">
-    <button
-      onClick={toggleFilter}
-      className="flex items-center bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-300 transition"
-    >
-      <FiFilter className="mr-2" />
-      {selectedCategory ? 
-        `Filtrado: ${categorias.find(c => c.id === selectedCategory)?.nombre || 'Categoría'}` : 
-        'Filtrar por categoría'}
-      {selectedCategory && (
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            clearFilter();
-          }}
-          className="ml-2 text-gray-500 hover:text-gray-700"
-        >
-          <FiX size={16} />
-        </button>
-      )}
-    </button>
-
-    {showFilter && (
-      <div className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10">
-        <div className="py-1">
-          <button
-            onClick={() => applyFilter(null)}
-            className={`block w-full text-left px-4 py-2 text-sm ${!selectedCategory ? 'bg-purple-100 text-purple-900' : 'text-gray-700 hover:bg-gray-100'}`}
-          >
-            Todas las categorías
-          </button>
-          {categorias.map(categoria => (
+        <div className="flex justify-between mb-6">
+          <div className="relative">
             <button
-              key={categoria.id}
-              onClick={() => applyFilter(categoria.id)}
-              className={`block w-full text-left px-4 py-2 text-sm ${selectedCategory === categoria.id ? 'bg-purple-100 text-purple-900' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={toggleFilter}
+              className="flex items-center bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-300 transition"
             >
-              {categoria.nombre}
+              <FiFilter className="mr-2" />
+              {selectedCategory ? 
+                `Filtrado: ${categorias.find(c => c.id === selectedCategory)?.nombre || 'Categoría'}` : 
+                'Filtrar por categoría'}
+              {selectedCategory && (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearFilter();
+                  }}
+                  className="ml-2 text-gray-500 hover:text-gray-700"
+                >
+                  <FiX size={16} />
+                </button>
+              )}
             </button>
-          ))}
+
+            {showFilter && (
+              <div className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10">
+                <div className="py-1">
+                  <button
+                    onClick={() => applyFilter(null)}
+                    className={`block w-full text-left px-4 py-2 text-sm ${!selectedCategory ? 'bg-purple-100 text-purple-900' : 'text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Todas las categorías
+                  </button>
+                  {categorias.map(categoria => (
+                    <button
+                      key={categoria.id}
+                      onClick={() => applyFilter(categoria.id)}
+                      className={`block w-full text-left px-4 py-2 text-sm ${selectedCategory === categoria.id ? 'bg-purple-100 text-purple-900' : 'text-gray-700 hover:bg-gray-100'}`}
+                    >
+                      {categoria.nombre}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => {
+              setEditingId(null);
+              setShowForm(true);
+              setError(null);
+              fetchProductos();
+            }}
+            className="bg-purple-900 text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition"
+          >
+            Agregar Producto
+          </button>
         </div>
-      </div>
-    )}
-  </div>
 
-  <button
-    onClick={() => {
-      setEditingId(null);
-      setShowForm(true);
-      setError(null);
-      fetchProductos();
-    }}
-    className="bg-purple-900 text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition"
-  >
-    Agregar Producto
-  </button>
-</div>
+        {showForm && (
+          <AgregarProducto
+            newProducto={newProducto}
+            handleChange={handleChange}
+            handleFileChange={handleFileChange}
+            handleSubmit={editingId ? handleUpdateProduct : handleAddProduct}
+            handleCancel={handleCancel}
+            categorias={categorias}
+            isEditing={!!editingId}
+            error={error}
+            isLoading={isLoading}
+            onSuccess={fetchProductos}
+          />
+        )}
 
-{showForm && (
-  <AgregarProducto
-    newProducto={newProducto}
-    handleChange={handleChange}
-    handleFileChange={handleFileChange}
-    handleSubmit={editingId ? handleUpdateProduct : handleAddProduct}
-    handleCancel={handleCancel}
-    categorias={categorias}
-    isEditing={!!editingId}
-    error={error}
-    isLoading={isLoading}
-    onSuccess={fetchProductos}
-  />
-)}
         <section className="w-full max-w-6xl mx-auto px-6">
           <h3 className="text-xl font-semibold mb-4 text-white">Productos en inventario</h3>
           <div className="overflow-x-auto rounded border border-red-300">
@@ -365,7 +361,16 @@ const Inventario = () => {
                     <td className="py-4 px-4 border-r border-red-300">{prod.nombre}</td>
                     <td className="py-4 px-4 border-r border-red-300">{prod.descripcion}</td>
                     <td className="py-4 px-4 border-r border-red-300">${prod.precio}</td>
-                    <td className="py-4 px-4 border-r border-red-300">{prod.stock}</td>
+                    <td className="py-4 px-4 border-r border-red-300 flex items-center">
+                      {prod.stock}
+                      {prod.stock < 10 && (
+                        <FiAlertTriangle 
+                          className="ml-2 text-yellow-400" 
+                          title="Stock bajo" 
+                          size={16}
+                        />
+                      )}
+                    </td>
                     <td className="py-4 px-4 border-r border-red-300">
                       {categorias.find(cat => cat.id === prod.id_categoria)?.nombre || prod.id_categoria}
                     </td>
