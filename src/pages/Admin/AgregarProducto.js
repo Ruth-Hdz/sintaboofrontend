@@ -9,52 +9,70 @@ const Spinner = () => (
 );
 
 const AgregarProducto = ({
-  newProducto,
+  newProducto = {},
   handleChange,
   handleFileChange,
   handleSubmit,
   handleCancel,
   categorias = [],
-  isEditing,
-  isLoadingCategorias,
-  error,
-  isLoading
+  isEditing = false,
+  isLoadingCategorias = false,
+  error = null,
 }) => {
   const [formErrors, setFormErrors] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
+  const [localIsLoading, setLocalIsLoading] = useState(false);
   const firstInputRef = useRef(null);
 
   useEffect(() => {
-    firstInputRef.current?.focus();
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
   }, []);
+
+  useEffect(() => {
+    if (isEditing && newProducto.imagen_url) {
+      setPreviewImage(newProducto.imagen_url);
+    }
+  }, [isEditing, newProducto.imagen_url]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      handleFileChange(e);
+    }
+  };
 
   const validateField = (name, value) => {
     const errors = { ...formErrors };
 
     switch (name) {
-      case "nombre":
-        if (!value?.trim()) errors.nombre = "El nombre es obligatorio";
+      case 'nombre':
+        if (!value || value.trim() === '') errors.nombre = 'El nombre es obligatorio';
         else delete errors.nombre;
         break;
-      case "id_categoria":
-        if (!value) errors.id_categoria = "Debes seleccionar una categoría";
+      case 'descripcion':
+        if (!value || value.trim() === '') errors.descripcion = 'La descripción es obligatoria';
+        else delete errors.descripcion;
+        break;
+      case 'id_categoria':
+        if (!value || value === '') errors.id_categoria = 'Debes seleccionar una categoría';
         else delete errors.id_categoria;
         break;
-      case "precio":
-        if (!value || isNaN(value) || parseFloat(value) <= 0)
-          errors.precio = "El precio debe ser mayor a 0";
+      case 'precio':
+        if (!value || isNaN(value) || parseFloat(value) <= 0) errors.precio = 'El precio debe ser mayor a 0';
         else delete errors.precio;
         break;
-      case "stock":
-        if (value === undefined || isNaN(value) || parseInt(value) < 0)
-          errors.stock = "El stock no puede ser negativo";
+      case 'stock':
+        if (value === undefined || value === null || isNaN(value) || parseInt(value) < 0) errors.stock = 'El stock no puede ser negativo';
         else delete errors.stock;
         break;
       default:
         break;
     }
-
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
   const handleBlur = (e) => {
@@ -63,7 +81,8 @@ const AgregarProducto = ({
   };
 
   const validateForm = () => {
-    const fields = {
+    const requiredFields = {
+      imagen_url: isEditing ? true : previewImage || newProducto.imagen_url,
       nombre: newProducto.nombre,
       id_categoria: newProducto.id_categoria,
       precio: newProducto.precio,
@@ -73,20 +92,20 @@ const AgregarProducto = ({
     let isValid = true;
     const errors = {};
 
-    Object.entries(fields).forEach(([field, value]) => {
-      if (!value && value !== 0) {
+    Object.keys(requiredFields).forEach(field => {
+      if (!requiredFields[field] && requiredFields[field] !== 0) {
         errors[field] = `El campo ${field} es obligatorio`;
         isValid = false;
       }
     });
 
-    if (newProducto.precio <= 0) {
-      errors.precio = "El precio debe ser mayor a 0";
+    if (newProducto.precio && (isNaN(newProducto.precio) || parseFloat(newProducto.precio) <= 0)) {
+      errors.precio = 'El precio debe ser mayor a 0';
       isValid = false;
     }
 
-    if (newProducto.stock < 0) {
-      errors.stock = "El stock no puede ser negativo";
+    if (newProducto.stock && (isNaN(newProducto.stock) || parseInt(newProducto.stock) < 0)) {
+      errors.stock = 'El stock no puede ser negativo';
       isValid = false;
     }
 
@@ -94,24 +113,34 @@ const AgregarProducto = ({
     return isValid;
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
+      setLocalIsLoading(true);
+
       const productoToSubmit = {
         ...newProducto,
-        precio: parseFloat(newProducto.precio).toFixed(2)
+        precio: parseFloat(newProducto.precio).toFixed(1)
       };
-      handleSubmit(productoToSubmit);
+
+      try {
+        await handleSubmit(e, productoToSubmit);
+        window.location.reload(); // Recarga inmediata
+      } catch (err) {
+        console.error("Error al guardar el producto:", err);
+      } finally {
+        setLocalIsLoading(false);
+      }
     }
   };
 
   const handleOutsideClick = (e) => {
-    if (e.target === e.currentTarget && handleCancel) {
+    if (e.target === e.currentTarget) {
       handleCancel();
     }
   };
 
-  const hasErrors = Object.keys(formErrors).length > 0;
+  const hasErrors = Object.keys(formErrors).length > 0 || error;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleOutsideClick}>
@@ -126,58 +155,47 @@ const AgregarProducto = ({
           {isEditing ? "Editar Producto" : "Agregar Nuevo Producto"}
         </h3>
 
-        {(error || hasErrors) && (
-          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-            {error || "Por favor corrige los errores en el formulario"}
-          </div>
-        )}
-
         <form onSubmit={handleFormSubmit}>
-          {/* Foto */}
+          {/* FOTO */}
           <div className="mb-4">
             <label className="block mb-1 text-white">Foto</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full rounded px-3 py-2 bg-white text-black"
-            />
-            {newProducto.imagen_url && (
+            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full rounded px-3 py-2 bg-white text-black" />
+            {(previewImage || (isEditing && newProducto.imagen_url)) && (
               <div className="mt-2">
                 <label className="block mb-1 text-white text-sm">Vista previa:</label>
-                <img src={newProducto.imagen_url} alt="Preview" className="max-h-32 rounded object-cover" />
+                <img src={previewImage || newProducto.imagen_url} alt="Preview" className="max-h-32 rounded object-cover border border-gray-500 bg-gray-700" />
               </div>
             )}
           </div>
 
-          {/* Nombre */}
+          {/* NOMBRE */}
           <div className="mb-4">
             <label className="block mb-1 text-white">Nombre*</label>
             <input
               ref={firstInputRef}
               type="text"
               name="nombre"
-              value={newProducto.nombre || ""}
+              value={newProducto.nombre || ''}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`w-full rounded px-3 py-2 text-black ${formErrors.nombre ? "border-red-500 border" : ""}`}
+              className={`w-full rounded px-3 py-2 text-black ${formErrors.nombre ? 'border-red-500 border' : ''}`}
             />
             {formErrors.nombre && <p className="text-red-400 text-sm mt-1">{formErrors.nombre}</p>}
           </div>
 
-          {/* Descripción */}
+          {/* DESCRIPCION */}
           <div className="mb-4">
             <label className="block mb-1 text-white">Descripción</label>
             <textarea
               name="descripcion"
-              value={newProducto.descripcion || ""}
+              value={newProducto.descripcion || ''}
               onChange={handleChange}
               className="w-full rounded px-3 py-2 text-black"
               rows="3"
             />
           </div>
 
-          {/* Categoría */}
+          {/* CATEGORÍA */}
           <div className="mb-4">
             <label className="block mb-1 text-white">Categoría*</label>
             {isLoadingCategorias ? (
@@ -188,21 +206,19 @@ const AgregarProducto = ({
                 value={newProducto.id_categoria || ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`w-full rounded px-3 py-2 text-black ${formErrors.id_categoria ? "border-red-500 border" : ""}`}
+                className={`w-full rounded px-3 py-2 text-black ${formErrors.id_categoria ? 'border-red-500 border' : ''}`}
                 disabled={categorias.length === 0}
               >
                 <option value="">Selecciona una categoría</option>
                 {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nombre}
-                  </option>
+                  <option key={cat.id} value={cat.id}>{cat.nombre}</option>
                 ))}
               </select>
             )}
             {formErrors.id_categoria && <p className="text-red-400 text-sm mt-1">{formErrors.id_categoria}</p>}
           </div>
 
-          {/* Precio */}
+          {/* PRECIO */}
           <div className="mb-4">
             <label className="block mb-1 text-white">Precio*</label>
             <div className="relative">
@@ -210,43 +226,53 @@ const AgregarProducto = ({
               <input
                 type="number"
                 name="precio"
-                value={newProducto.precio || ""}
+                value={newProducto.precio || ''}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`w-full rounded px-3 py-2 text-black pl-7 ${formErrors.precio ? "border-red-500 border" : ""}`}
-                min="0"
+                className={`w-full rounded px-3 py-2 text-black pl-7 ${formErrors.precio ? 'border-red-500 border' : ''}`}
+                min="0.01"
                 step="0.01"
               />
             </div>
             {formErrors.precio && <p className="text-red-400 text-sm mt-1">{formErrors.precio}</p>}
           </div>
 
-          {/* Stock */}
+          {/* STOCK */}
           <div className="mb-6">
             <label className="block mb-1 text-white">Stock*</label>
             <input
               type="number"
               name="stock"
-              value={newProducto.stock || ""}
+              value={newProducto.stock || ''}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`w-full rounded px-3 py-2 text-black ${formErrors.stock ? "border-red-500 border" : ""}`}
+              className={`w-full rounded px-3 py-2 text-black ${formErrors.stock ? 'border-red-500 border' : ''}`}
               min="0"
             />
             {formErrors.stock && <p className="text-red-400 text-sm mt-1">{formErrors.stock}</p>}
           </div>
 
-          {/* Botones */}
+          {/* BOTONES */}
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={handleCancel} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded" disabled={isLoading}>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+              disabled={localIsLoading}
+            >
               Cancelar
             </button>
             <button
               type="submit"
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50 flex items-center justify-center"
-              disabled={categorias.length === 0 || isLoading || hasErrors}
+              disabled={categorias.length === 0 || localIsLoading || hasErrors}
             >
-              {isLoading ? <><Spinner /> {isEditing ? "Actualizando..." : "Agregando..."}</> : isEditing ? "Actualizar" : "Agregar"}
+              {localIsLoading ? (
+                <>
+                  <Spinner />
+                  {isEditing ? "Actualizando..." : "Agregando..."}
+                </>
+              ) : isEditing ? "Actualizar" : "Agregar"}
             </button>
           </div>
         </form>
