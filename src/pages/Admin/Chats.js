@@ -92,18 +92,11 @@ const Chats = () => {
   };
 
   return (
-<div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-white">
       <Sidebar />
 
       <div className="flex-1 flex flex-col p-6 text-white overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center mb-8 px-6 bg-black py-4 rounded">
-          <img src={logo} alt="Logo" className="w-10 h-10 rounded-full mr-3" />
-          <h1 className="text-2xl font-bold">
-            <span style={{ color: "#FF7E5D" }}>Sin</span>
-            <span>Taboo</span>
-          </h1>
-        </header>
+
 
         <div className="flex flex-1 border border-red-300 rounded overflow-hidden shadow-lg max-w-7xl mx-auto">
           {/* Lista de chats */}
@@ -120,9 +113,8 @@ const Chats = () => {
                   <li
                     key={chat.id}
                     onClick={() => setChatActivoId(chat.id)}
-                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-purple-900 transition ${
-                      isActive ? "bg-purple-900" : ""
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-purple-900 transition ${isActive ? "bg-purple-900" : ""
+                      }`}
                   >
                     <img
                       src={chat.foto}
@@ -177,11 +169,10 @@ const Chats = () => {
                 return (
                   <div key={i} className={`flex ${esCliente ? "justify-start" : "justify-end"}`}>
                     <div
-                      className={`max-w-xs px-4 py-2 rounded-lg ${
-                        esCliente
+                      className={`max-w-xs px-4 py-2 rounded-lg ${esCliente
                           ? "bg-purple-700 text-white rounded-bl-none"
                           : "bg-green-600 text-white rounded-br-none"
-                      }`}
+                        }`}
                     >
                       {msg.texto}
                     </div>
