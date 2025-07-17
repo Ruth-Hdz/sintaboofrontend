@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { NotificationProvider } from './context/NotificationContext';
 import HomePage from './pages/User/HomePage';
 import Login from './pages/Admin/loginAdmin';
 import Inicio from './pages/Admin/Inicio';
@@ -9,17 +10,19 @@ import Perfil from './pages/Admin/Perfil';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/loginAdmin" element={<Login />} />
-        <Route path="/Inicio" element={<Inicio />} />
-        <Route path="/Inventario" element={<Inventario />} />
-        <Route path="/Preguntas" element={<Preguntas />} />
-        <Route path="/Chats" element={<Chats />} />
-        <Route path="/PerfildeTienda" element={<Perfil />} />
-      </Routes>
-    </Router>
+    <NotificationProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/loginAdmin" element={<Login />} />
+          <Route path="/Inicio" element={<Inicio />} />
+          <Route path="/Inventario" element={<Inventario />} />
+          <Route path="/Preguntas" element={<Preguntas />} />
+          <Route path="/Chats" element={<Chats />} />
+          <Route path="/PerfildeTienda" element={<Perfil />} />
+        </Routes>
+      </Router>
+    </NotificationProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useNotification } from "../../context/NotificationContext";
 
 const Spinner = () => (
   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -18,11 +19,18 @@ const AgregarProducto = ({
   isEditing = false,
   isLoadingCategorias = false,
   error = null,
+  onSuccess,
 }) => {
   const [formErrors, setFormErrors] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
   const [localIsLoading, setLocalIsLoading] = useState(false);
   const firstInputRef = useRef(null);
+  const { showNotification } = useNotification();
+  const [operationCompleted, setOperationCompleted] = useState(false);
+
+  useEffect(() => {
+  setOperationCompleted(false);
+}, []);
 
   useEffect(() => {
     if (firstInputRef.current) {
@@ -125,19 +133,60 @@ const AgregarProducto = ({
 
       try {
         await handleSubmit(e, productoToSubmit);
-        window.location.reload(); // Recarga inmediata
+        showNotification(
+          isEditing
+            ? "✅ Producto actualizado correctamente"
+            : "✅ Producto creado exitosamente",
+          "success"
+        );
+
+        // ✅ Marca que la operación fue completada correctamente
+        setOperationCompleted(true);
+
+        // Cierra el modal y actualiza los datos
+        setTimeout(() => {
+          handleCancel(); // Esto cierra el modal sin mostrar notificación de cancelación
+          if (onSuccess) {
+            onSuccess(); // Esto debería hacer fetchProductos() o actualizar el estado
+          }
+        }, 1000);
       } catch (err) {
         console.error("Error al guardar el producto:", err);
-      } finally {
+        showNotification(
+          "❌ Error al procesar la solicitud. Por favor, inténtalo nuevamente.",
+          "error"
+        );
+      }
+      finally {
         setLocalIsLoading(false);
       }
+    } else {
+      showNotification(
+        "⚠ Por favor, completa todos los campos requeridos correctamente",
+        "warning"
+      );
     }
   };
 
   const handleOutsideClick = (e) => {
-    if (e.target === e.currentTarget) {
-      handleCancel();
+  if (e.target === e.currentTarget) {
+    if (!operationCompleted) {
+      showNotification(
+        "⏹ Operación cancelada por el usuario",
+        "info"
+      );
     }
+    handleCancel();
+  }
+};
+
+
+  const handleCancelWithNotification = () => {
+    showNotification(
+      "⏹ Operación cancelada por el usuario",
+      "info"
+    );
+    handleCancel();
   };
 
   const hasErrors = Object.keys(formErrors).length > 0 || error;
@@ -256,7 +305,7 @@ const AgregarProducto = ({
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={handleCancel}
+              onClick={handleCancelWithNotification}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
               disabled={localIsLoading}
             >

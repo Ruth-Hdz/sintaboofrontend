@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import AgregarProducto from "./AgregarProducto";
 import { API_URL } from "../../services/apiConfig";
+import { useNotification } from "../../context/NotificationContext";
 
 const Inventario = () => {
   const [products, setProducts] = useState([]);
@@ -20,6 +21,7 @@ const Inventario = () => {
     stock: '',
     imagen_url: ''
   });
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     fetchProductos();
@@ -28,11 +30,16 @@ const Inventario = () => {
 
   const fetchProductos = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${API_URL}/inventory`);
       setProducts(res.data);
     } catch (err) {
       console.error("Error al obtener productos:", err);
-      setError("Error al cargar los productos");
+      const errorMsg = err.response?.data?.message || "Error al cargar los productos";
+      setError(errorMsg);
+      showNotification(`❌ ${errorMsg}`, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,7 +49,9 @@ const Inventario = () => {
       setCategorias(res.data);
     } catch (err) {
       console.error("Error al obtener categorías:", err);
-      setError("Error al cargar las categorías");
+      const errorMsg = err.response?.data?.message || "Error al cargar las categorías";
+      setError(errorMsg);
+      showNotification(`❌ ${errorMsg}`, "error");
     }
   };
 
@@ -95,9 +104,12 @@ const Inventario = () => {
         imagen_url: ''
       });
       setShowForm(false);
+      showNotification("✅ Producto creado exitosamente", "success");
     } catch (err) {
       console.error("Error al agregar producto:", err);
-      setError(err.response?.data?.message || "Error al agregar producto");
+      const errorMsg = err.response?.data?.message || "Error al agregar producto";
+      setError(errorMsg);
+      showNotification(`❌ ${errorMsg}`, "error");
     } finally {
       setIsLoading(false);
     }
@@ -116,6 +128,7 @@ const Inventario = () => {
         imagen_url: productToEdit.imagen_url || '',
       });
       setShowForm(true);
+      showNotification("✏️ Modo edición activado", "info");
     }
   };
 
@@ -156,22 +169,32 @@ const Inventario = () => {
 
       setEditingId(null);
       setShowForm(false);
+      showNotification("✅ Producto actualizado correctamente", "success");
     } catch (err) {
       console.error("Error al actualizar producto:", err);
-      setError(err.response?.data?.message || "Error al actualizar producto");
+      const errorMsg = err.response?.data?.message || "Error al actualizar producto";
+      setError(errorMsg);
+      showNotification(`❌ ${errorMsg}`, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm("¿Eliminar producto?")) return;
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+      showNotification("⏹ Eliminación cancelada", "info");
+      return;
+    }
+
     try {
       await axios.delete(`${API_URL}/inventory/${id}`);
       setProducts(products.filter((prod) => prod.id !== id));
+      showNotification("🗑️ Producto eliminado correctamente", "success");
     } catch (err) {
       console.error("Error al eliminar producto:", err);
-      setError("Error al eliminar producto");
+      const errorMsg = err.response?.data?.message || "Error al eliminar producto";
+      setError(errorMsg);
+      showNotification(`❌ ${errorMsg}`, "error");
     }
   };
 
@@ -187,6 +210,7 @@ const Inventario = () => {
     setEditingId(null);
     setShowForm(false);
     setError(null);
+    showNotification("Pagina Actualizada", "info");
   };
 
   return (
@@ -236,6 +260,7 @@ const Inventario = () => {
             isEditing={!!editingId}
             error={error}
             isLoading={isLoading}
+            onSuccess={fetchProductos}
           />
         )}
 
