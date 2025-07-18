@@ -21,7 +21,6 @@ const Inventario = () => {
     descripcion: '',
     id_categoria: '',
     precio: '',
-    estado: 'Activo',
     stock: '',
     imagen_url: ''
   });
@@ -90,7 +89,6 @@ const Inventario = () => {
     formData.append("nombre", productoData.nombre);
     formData.append("descripcion", productoData.descripcion || '');
     formData.append("precio", productoData.precio);
-    formData.append("estado", productoData.estado || 'Activo');
     formData.append("stock", productoData.stock);
     formData.append("id_categoria", productoData.id_categoria);
 
@@ -111,7 +109,6 @@ const Inventario = () => {
         descripcion: '',
         id_categoria: '',
         precio: '',
-        estado: 'Activo',
         stock: '',
         imagen_url: ''
       });
@@ -127,23 +124,24 @@ const Inventario = () => {
     }
   };
 
-  const handleEditProduct = (id) => {
-    const productToEdit = products.find((prod) => prod.id === id);
-    if (productToEdit) {
-      setEditingId(id);
-      setNewProducto({
-        nombre: productToEdit.nombre,
-        descripcion: productToEdit.descripcion,
-        id_categoria: productToEdit.id_categoria,
-        precio: productToEdit.precio,
-        estado: productToEdit.estado || 'Activo',
-        stock: productToEdit.stock,
-        imagen_url: productToEdit.imagen_url || '',
-      });
-      setShowForm(true);
-      showNotification("✏️ Modo edición activado", "info");
-    }
-  };
+ const handleEditProduct = (id) => {
+  const productToEdit = products.find((prod) => prod.id === id);
+  if (productToEdit) {
+    setEditingId(id);
+    setNewProducto({
+      nombre: productToEdit.nombre,
+      descripcion: productToEdit.descripcion,
+      id_categoria: productToEdit.id_categoria,
+      precio: productToEdit.precio,
+      stock: productToEdit.stock,
+      imagen_url: productToEdit.imagen_url || '',
+    });
+    setShowForm(true);
+
+    // ✅ Este es el mensaje que confirma que el modo edición fue activado
+    showNotification("✏️ Modo edición activado", "info");
+  }
+};
 
   const handleUpdateProduct = async (e, productoData) => {
     e.preventDefault();
@@ -151,7 +149,6 @@ const Inventario = () => {
     formData.append("nombre", newProducto.nombre);
     formData.append("descripcion", newProducto.descripcion);
     formData.append("precio", newProducto.precio);
-    formData.append("estado", newProducto.estado || 'Activo');
     formData.append("stock", newProducto.stock);
     formData.append("id_categoria", newProducto.id_categoria);
 
@@ -175,9 +172,8 @@ const Inventario = () => {
         descripcion: '',
         id_categoria: '',
         precio: '',
-        estado: 'Activo',
         stock: '',
-        imagen_url: ''
+        imagen_url: '' 
       });
 
       setEditingId(null);
@@ -217,14 +213,13 @@ const Inventario = () => {
       descripcion: '',
       id_categoria: '',
       precio: '',
-      estado: 'Activo',
       stock: '',
       imagen_url: ''
     });
     setEditingId(null);
     setShowForm(false);
     setError(null);
-    showNotification("Página actualizada", "info");
+    showNotification("❌ Edición cancelada", "info");
   };
 
   const toggleFilter = () => {
@@ -271,11 +266,11 @@ const Inventario = () => {
               className="flex items-center bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm hover:bg-gray-300 transition"
             >
               <FiFilter className="mr-2" />
-              {selectedCategory ?
-                `Filtrado: ${categorias.find(c => c.id === selectedCategory)?.nombre || 'Categoría'}` :
+              {selectedCategory ? 
+                `Filtrado: ${categorias.find(c => c.id === selectedCategory)?.nombre || 'Categoría'}` : 
                 'Filtrar por categoría'}
               {selectedCategory && (
-                <button
+                <button 
                   onClick={(e) => {
                     e.stopPropagation();
                     clearFilter();
@@ -315,6 +310,8 @@ const Inventario = () => {
               setEditingId(null);
               setShowForm(true);
               setError(null);
+              showNotification("🆕 Estás por agregar un nuevo producto", "info"); // ✅ Notificación al agregar
+
               fetchProductos();
             }}
             className="bg-purple-900 text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition"
@@ -344,49 +341,44 @@ const Inventario = () => {
             <table className="w-full border-collapse border border-red-300 text-sm bg-[#2e2450]">
               <thead className="bg-gray-700 text-white">
                 <tr>
-                  <th className="py-3 px-4 border border-red-300 text-left">#id</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Foto</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Nombre</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Descripción</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Precio</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Estado</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Stock</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Categoría</th>
-                  <th className="py-3 px-4 border border-red-300 text-left">Acciones</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">#id</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">Foto</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">Nombre</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">Descripción</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">Precio</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">Stock</th>
+                  <th className="py-3 px-4 border-r border-red-300 text-left">Categoría</th>
+                  <th className="py-3 px-4 text-left">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-purple-900 transition">
-                    <td className="py-4 px-4 font-semibold border border-red-300">{prod.id}</td>
-                    <td className="py-2 px-4 border border-red-300">
+                  <tr key={prod.id} className="border-t border-red-300 hover:bg-purple-900 transition">
+                    <td className="py-4 px-4 font-semibold border-r border-red-300">{prod.id}</td>
+                    <td className="py-2 px-4 border-r border-red-300">
                       {prod.imagen_url ? (
                         <img src={prod.imagen_url} alt={prod.nombre} className="w-12 h-12 object-cover rounded" />
                       ) : (
                         <span className="text-gray-400">Sin imagen</span>
                       )}
                     </td>
-                    <td className="py-4 px-4 border border-red-300">{prod.nombre}</td>
-                    <td className="py-4 px-4 border border-red-300">{prod.descripcion}</td>
-                    <td className="py-4 px-4 border border-red-300">${prod.precio}</td>
-                    <td className="py-4 px-4 border border-red-300">{prod.estado || 'Activo'}</td>
-                    <td className="py-4 px-4 border border-red-300">
-                      <div className="flex items-center">
-                        {prod.stock}
-                        {prod.stock < 10 && (
-                          <FiAlertTriangle
-                            className="ml-2 text-yellow-400"
-                            title="Stock bajo"
-                            size={16}
-                          />
-                        )}
-                      </div>
+                    <td className="py-4 px-4 border-r border-red-300">{prod.nombre}</td>
+                    <td className="py-4 px-4 border-r border-red-300">{prod.descripcion}</td>
+                    <td className="py-4 px-4 border-r border-red-300">${prod.precio}</td>
+                    <td className="py-4 px-4 border-r border-red-300 flex items-center">
+                      {prod.stock}
+                      {prod.stock < 10 && (
+                        <FiAlertTriangle 
+                          className="ml-2 text-yellow-400" 
+                          title="Stock bajo" 
+                          size={16}
+                        />
+                      )}
                     </td>
-
-                    <td className="py-4 px-4 border border-red-300">
+                    <td className="py-4 px-4 border-r border-red-300">
                       {categorias.find(cat => cat.id === prod.id_categoria)?.nombre || prod.id_categoria}
                     </td>
-                    <td className="py-4 px-4 border border-red-300 ">
+                    <td className="py-4 px-4 flex gap-2">
                       <button
                         onClick={() => handleEditProduct(prod.id)}
                         className="text-blue-400 hover:text-blue-600 mr-2"

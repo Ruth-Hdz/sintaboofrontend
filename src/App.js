@@ -7,6 +7,7 @@ import Inventario from './pages/Admin/Inventario';
 import Preguntas from './pages/Admin/Preguntas';
 import Chats from './pages/Admin/Chats';
 import Perfil from './pages/Admin/Perfil';
+import CrearCategorias from './pages/Admin/crear-categorias';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/Preguntas" element={<Preguntas />} />
           <Route path="/Chats" element={<Chats />} />
           <Route path="/PerfildeTienda" element={<Perfil />} />
+          <Route path="/crear-categorias" element={<CrearCategorias />} />
         </Routes>
       </Router>
     </NotificationProvider>
